@@ -1,4 +1,4 @@
-package gc.board.article;
+package gc.board.article.api;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
