@@ -63,12 +63,12 @@ public class ArticleService {
         articleRepository.deleteById(articleId);
     }
 
-    public List<ArticleResponse> readAllInfiniteScroll(Long boardId, Long limit, Long lastArticleId) {
+    public List<ArticleResponse> readAllInfiniteScroll(Long boardId, Long pageSize, Long lastArticleId) {
         List<Article> articleList;
         if (lastArticleId == null) {
-            articleList = articleRepository.findAllInfiniteScroll(boardId, limit);
+            articleList = articleRepository.findAllInfiniteScroll(boardId, pageSize);
         } else {
-            articleList = articleRepository.findAllInfiniteScroll(boardId, lastArticleId, limit);
+            articleList = articleRepository.findAllInfiniteScroll(boardId, lastArticleId, pageSize);
         }
 
         return articleList.stream().map(ArticleResponse::from).toList();

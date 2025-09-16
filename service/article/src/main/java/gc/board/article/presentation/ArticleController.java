@@ -8,6 +8,8 @@ import gc.board.article.service.response.ArticlePageResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 public class ArticleController {
@@ -42,5 +44,14 @@ public class ArticleController {
     @DeleteMapping("/v1/articles/{articleId}")
     public void deleteArticle(@PathVariable Long articleId) {
         articleService.delete(articleId);
+    }
+
+    @GetMapping("/v1/articles/infinite")
+    public List<ArticleResponse> getArticlesInfiniteScrolling(
+            @RequestParam Long boardId,
+            @RequestParam Long pageSize,
+            @RequestParam(required = false) Long lastArticleId
+    ) {
+        return articleService.readAllInfiniteScroll(boardId, pageSize, lastArticleId);
     }
 }
