@@ -3,9 +3,14 @@ package gc.board.article.api;
 import gc.board.article.service.response.ArticlePageResponse;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.web.client.RestClient;
 
+import java.util.List;
+
+@Slf4j
 public class ArticleApiTest {
     RestClient client = RestClient.create("http://localhost:9001");
     // ================= HTTP 통신 메서드 =================
@@ -52,6 +57,31 @@ public class ArticleApiTest {
                 .body(Void.class);
     }
 
+    private List<ArticleResponse> readAllInfiniteScroll(Long boardId, Long pageSize) {
+        return client.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/v1/articles/infinite")
+                        .queryParam("boardId", boardId)
+                        .queryParam("pageSize", pageSize)
+                        .build()
+                )
+                .retrieve()
+                .body(new ParameterizedTypeReference<List<ArticleResponse>>() {});
+    }
+
+    private List<ArticleResponse> readAllInfiniteScroll(Long boardId, Long pageSize, Long lastArticleId) {
+        return client.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/v1/articles/infinite")
+                        .queryParam("boardId", boardId)
+                        .queryParam("pageSize", pageSize)
+                        .queryParam("lastArticleId", lastArticleId)
+                        .build()
+                )
+                .retrieve()
+                .body(new ParameterizedTypeReference<List<ArticleResponse>>() {});
+    }
+
     // ================= 테스트 메서드 =================
     @Test
     void createTest() {
@@ -93,6 +123,30 @@ public class ArticleApiTest {
         System.out.println("delete 요청 성공!");
     }
 
+    @Test
+    void readAllInfiniteScrollTest() {
+        Long boardId = 1L;
+        Long pageSize = 30L;
+
+        List<ArticleResponse> articleResponseList = readAllInfiniteScroll(boardId, pageSize);
+
+        log.info("첫 페이지 articleId : {}",
+                    articleResponseList
+                            .stream()
+                            .map(ArticleResponse::getArticleId)
+                            .toList()
+                );
+
+
+        Long lastIdFromFirstPage = articleResponseList.getLast().getArticleId();
+
+        List<ArticleResponse> secondArticleResponseList =  readAllInfiniteScroll(boardId, pageSize, lastIdFromFirstPage);
+
+        Long firstIdFromSecondPage = secondArticleResponseList.getFirst().getArticleId();
+
+        assert lastIdFromFirstPage > firstIdFromSecondPage : "무한스크롤 연속성이 깨졌습니다!";
+    }
+
     @Getter
     @AllArgsConstructor
     static class ArticleCreateRequest {
@@ -112,7 +166,7 @@ public class ArticleApiTest {
     @Getter
     @AllArgsConstructor
     static class ArticleResponse {
-        private Long id;
+        private Long articleId;
         private String title;
         private String content;
         private Long boardId;
