@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -60,5 +61,16 @@ public class ArticleService {
     @Transactional
     public void delete(Long articleId) {
         articleRepository.deleteById(articleId);
+    }
+
+    public List<ArticleResponse> readAllInfiniteScroll(Long boardId, Long limit, Long lastArticleId) {
+        List<Article> articleList;
+        if (lastArticleId == null) {
+            articleList = articleRepository.findAllInfiniteScroll(boardId, limit);
+        } else {
+            articleList = articleRepository.findAllInfiniteScroll(boardId, lastArticleId, limit);
+        }
+
+        return articleList.stream().map(ArticleResponse::from).toList();
     }
 }
