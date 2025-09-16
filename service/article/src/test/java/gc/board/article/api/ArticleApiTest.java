@@ -92,7 +92,7 @@ public class ArticleApiTest {
 
     @Test
     void readTest() {
-        Long articleId = 223749490225635328L; // 실제 존재하는 ID로 변경
+        Long articleId = 223754780805419812L; // 실제 존재하는 ID로 변경
         read(articleId);
         System.out.println("get 요청 성공!");
     }
@@ -110,7 +110,7 @@ public class ArticleApiTest {
 
     @Test
     void updateTest() {
-        Long articleId = 223749490225635328L; // 실제 존재하는 ID로 변경
+        Long articleId = 223754780805419812L; // 실제 존재하는 ID로 변경
         ArticleUpdateRequest updateRequest = new ArticleUpdateRequest("hi 2", "my content 2");
         update(articleId, updateRequest);
         System.out.println("put 요청 성공!");
@@ -118,7 +118,7 @@ public class ArticleApiTest {
 
     @Test
     void deleteTest() {
-        Long articleId = 223749490225635328L;
+        Long articleId = 223754780805419812L;
         delete(articleId);
         System.out.println("delete 요청 성공!");
     }
