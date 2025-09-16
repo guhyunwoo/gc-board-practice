@@ -28,4 +28,22 @@ class ArticleRepositoryTest {
 
         log.info(articleCount.toString());
     }
+
+    @Test
+    void findAllInfiniteScroll() {
+        List<Article> firstPage = articleRepository.findAllInfiniteScroll(1L, 30L);
+
+        log.info("첫 페이지 articleIds: {}",
+                firstPage.stream().map(Article::getArticleId).toList());
+
+        Long lastIdFromFirstPage = firstPage.getLast().getArticleId();
+
+        List<Article> secondPage =  articleRepository.findAllInfiniteScroll(1L, 30L, lastIdFromFirstPage);
+
+        log.info("두 번째 페이지 articleIds: {}",
+                secondPage.stream().map(Article::getArticleId).toList());
+
+        Long firstIdFromSecondPage = secondPage.getFirst().getArticleId();
+        assert lastIdFromFirstPage > firstIdFromSecondPage : "무한스크롤 연속성이 깨졌습니다!";
+    }
 }
